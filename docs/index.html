@@ -81,8 +81,6 @@
           <label class="pack"><input type="radio" name="pack" value="cat-orange"><span class="num">03</span><img class="thumb" src="preview/gifs/cat-orange/idle.gif" alt=""><span class="nm">cat-orange<small>CC0 ginger</small></span></label>
           <label class="pack"><input type="radio" name="pack" value="cat-pet"><span class="num">04</span><img class="thumb" src="preview/gifs/cat-pet/idle.gif" alt=""><span class="nm">cat-pet<small>CC0 kitten</small></span></label>
           <label class="pack sel"><input type="radio" name="pack" value="clawd" checked><span class="num">05</span><img class="thumb" src="preview/gifs/clawd/clawd-idle.gif" alt=""><span class="nm">clawd<small>Claude mascot · MIT</small></span></label>
-          <label class="pack"><input type="radio" name="pack" value="chaiklang"><span class="num">06</span><img class="thumb" src="preview/gifs/chaiklang/idle.gif" alt=""><span class="nm">chaiklang 🦁<small>Middle Switchboard · LVGL fw · upd 2026-06-17</small></span></label>
-          <label class="pack"><input type="radio" name="pack" value="sombo"><span class="num">07</span><img class="thumb" src="preview/gifs/sombo/idle.gif" alt=""><span class="nm">sombo<small>Sombo desk-pet · CC0 · upd 2026-06-17</small></span></label>
         </div>
         <p class="note" style="margin-top:1rem;">Plug in the <b>native USB</b> port → click → pick the <code>usbmodem</code> port → Install. App image at <code>0x10000</code> + shared 3 MB LittleFS at <code>0x290000</code> (all packs live there; only the boot default differs). JC3248W535 · ESP32-S3.</p>
         <div class="install" id="install"></div>
@@ -96,6 +94,10 @@
         <div class="fw"><div class="h"><b>🦁 ChaiKlang</b> <span class="tag">ESP32-S3</span></div>
           <p>The Middle Switchboard — <code>lion_pulse(100)=5050</code>, <code>route(3,4)=15</code>. (<a href="https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/01-chaiklang">01-chaiklang</a>)</p>
           <esp-web-install-button manifest="manifest-chaiklang.json"></esp-web-install-button></div>
+
+        <div class="fw"><div class="h"><b>🛡️ Sombo</b> <span class="tag">ESP32-S3</span></div>
+          <p>GIF header parser — <code>gif_parse</code> → 96×100. (upd 2026-06-17) (<a href="https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/88-sombo">88-sombo</a>)</p>
+          <esp-web-install-button manifest="manifest-sombo.json"></esp-web-install-button></div>
 
         <div class="fw"><div class="h"><b>🎯 Leica</b> <span class="tag">ESP32</span></div>
           <p>Fleet-pulse precision build. (<a href="https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/03-leica">03-leica</a>)</p>
