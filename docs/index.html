@@ -91,13 +91,50 @@
         <h2>Workshop firmwares — flash a classmate's submission</h2>
         <p class="note" style="margin-top:0;">Each is one student's <code>.wasm</code> running on the ESP32 via wasm3, hardware-verified under WAMR. After flashing, watch serial @ 115200.</p>
 
-        <div class="fw"><div class="h"><b>🦁 ChaiKlang</b> <span class="tag">ESP32-S3</span></div>
-          <p>The Middle Switchboard — <code>lion_pulse(100)=5050</code>, <code>route(3,4)=15</code>. (<a href="https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/01-chaiklang">01-chaiklang</a>)</p>
-          <esp-web-install-button manifest="manifest-chaiklang.json"></esp-web-install-button></div>
+        <div class="fw" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+          <div>
+            <div class="h"><b>🦁 ChaiKlang</b> <span class="tag">ESP32-S3</span></div>
+            <p>The Middle Switchboard — <code>lion_pulse(100)=5050</code>, <code>route(3,4)=15</code>. (<a href="https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/01-chaiklang">01-chaiklang</a>)</p>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <esp-web-install-button manifest="manifest-chaiklang.json"></esp-web-install-button>
+              <button onclick="setPack('chaiklang')" style="background:#1c2540; color:var(--chalk); border:1px solid #2c3a63; border-radius:8px; padding:6px 12px; cursor:pointer; font:inherit; font-size:12px;">👁️ Load Preview</button>
+            </div>
+          </div>
+          <div style="display: flex; gap: 6px; border: 1px solid var(--embers); border-radius: 8px; padding: 4px; background: #000; flex-shrink: 0;">
+            <img src="preview/gifs/chaiklang/idle.gif" style="width: 48px; height: 50px; image-rendering: pixelated; border-radius: 4px;" title="idle" />
+            <img src="preview/gifs/chaiklang/busy.gif" style="width: 48px; height: 50px; image-rendering: pixelated; border-radius: 4px;" title="busy" />
+          </div>
+        </div>
 
-        <div class="fw"><div class="h"><b>🛡️ Sombo</b> <span class="tag">ESP32-S3</span></div>
-          <p>GIF header parser — <code>gif_parse</code> → 96×100. (upd 2026-06-17) (<a href="https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/88-sombo">88-sombo</a>)</p>
-          <esp-web-install-button manifest="manifest-sombo.json"></esp-web-install-button></div>
+        <div class="fw" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+          <div>
+            <div class="h"><b>🛡️ Sombo</b> <span class="tag">ESP32-S3</span></div>
+            <p>GIF header parser — <code>gif_parse</code> → 96×100. (upd 2026-06-17) (<a href="https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/88-sombo">88-sombo</a>)</p>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <esp-web-install-button manifest="manifest-sombo.json"></esp-web-install-button>
+              <button onclick="setPack('sombo')" style="background:#1c2540; color:var(--chalk); border:1px solid #2c3a63; border-radius:8px; padding:6px 12px; cursor:pointer; font:inherit; font-size:12px;">👁️ Load Preview</button>
+            </div>
+          </div>
+          <div style="display: flex; gap: 6px; border: 1px solid var(--embers); border-radius: 8px; padding: 4px; background: #000; flex-shrink: 0;">
+            <img src="preview/gifs/sombo/idle.gif" style="width: 48px; height: 50px; image-rendering: pixelated; border-radius: 4px;" title="idle" />
+            <img src="preview/gifs/sombo/busy.gif" style="width: 48px; height: 50px; image-rendering: pixelated; border-radius: 4px;" title="busy" />
+          </div>
+        </div>
+
+        <div class="fw" style="display: flex; justify-content: space-between; align-items: center; gap: 1rem;">
+          <div>
+            <div class="h"><b>🤖 No.10 X</b> <span class="tag">ESP32-S3</span></div>
+            <p>Agy CLI Agent — <code>no10_pulse</code> → 96×100. (upd 2026-06-17) (<a href="https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/10-no10">10-no10</a>)</p>
+            <div style="display: flex; gap: 8px; align-items: center;">
+              <esp-web-install-button manifest="manifest-no10.json"></esp-web-install-button>
+              <button onclick="setPack('no10')" style="background:#1c2540; color:var(--chalk); border:1px solid #2c3a63; border-radius:8px; padding:6px 12px; cursor:pointer; font:inherit; font-size:12px;">👁️ Load Preview</button>
+            </div>
+          </div>
+          <div style="display: flex; gap: 6px; border: 1px solid var(--embers); border-radius: 8px; padding: 4px; background: #000; flex-shrink: 0;">
+            <img src="preview/gifs/no10/idle.gif" style="width: 48px; height: 50px; image-rendering: pixelated; border-radius: 4px;" title="idle" />
+            <img src="preview/gifs/no10/busy.gif" style="width: 48px; height: 50px; image-rendering: pixelated; border-radius: 4px;" title="busy" />
+          </div>
+        </div>
 
         <div class="fw"><div class="h"><b>🎯 Leica</b> <span class="tag">ESP32</span></div>
           <p>Fleet-pulse precision build. (<a href="https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/03-leica">03-leica</a>)</p>
