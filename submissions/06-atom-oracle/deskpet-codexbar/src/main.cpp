@@ -124,6 +124,7 @@ void loop() {
   const int SWIPE_DX = 45;
   const int SWIPE_SLOP = 35;
   const uint32_t SWIPE_MAX_MS = 700;
+  const uint32_t LONG_PRESS_MS = 900;
 
   if (millis() >= g_touchCooldownUntil && axs::read_touch(&tx, &ty)) {
     g_miss = 0;
@@ -141,9 +142,17 @@ void loop() {
     int dx = g_lastX - g_startX;
     int dy = g_lastY - g_startY;
     uint32_t dt = millis() - g_startMs;
+    if (!g_gestureDone && dt >= LONG_PRESS_MS && abs(dx) < 25 && abs(dy) < 25 && g_startX >= 70 && g_startX <= 250 && g_startY >= 120 && g_startY <= 360) {
+      audioBlip(true); pet_menu_open();
+      g_gestureDone = true; g_touchCooldownUntil = millis() + 700;
+      Serial.println("[touch] long center -> quick menu");
+    }
     if (!g_gestureDone && dt <= SWIPE_MAX_MS && abs(dx) >= SWIPE_DX && abs(dx) > abs(dy) && abs(dy) <= SWIPE_SLOP) {
-      if (dx < 0) { audioBlip(true);  pet_next_page(); Serial.println("[touch] swipe left -> next page"); }
-      else        { audioBlip(false); pet_prev_page(); Serial.println("[touch] swipe right -> prev page"); }
+      if (pet_menu_active()) {
+        if (dx < 0) { audioBlip(true);  pet_menu_next(); Serial.println("[touch] menu swipe left -> next"); }
+        else        { audioBlip(false); pet_menu_prev(); Serial.println("[touch] menu swipe right -> prev"); }
+      } else if (dx < 0) { audioBlip(true);  pet_next_page(); Serial.println("[touch] swipe left -> next page"); }
+      else              { audioBlip(false); pet_prev_page(); Serial.println("[touch] swipe right -> prev page"); }
       g_gestureDone = true;
       g_touchCooldownUntil = millis() + 500;
     }
@@ -152,7 +161,12 @@ void loop() {
     g_touchCooldownUntil = millis() + 350;
     if (!g_gestureDone) {
       // Tap fallback: edge taps change page; middle/top/bottom keep original actions.
-      if (g_startX < 70)       { audioBlip(false); pet_prev_page(); Serial.println("[touch] left edge -> prev page"); }
+      if (pet_menu_active()) {
+        if (g_startX < 90)       { audioBlip(false); pet_menu_prev(); Serial.println("[touch] menu left -> prev"); }
+        else if (g_startX > 230) { audioBlip(true);  pet_menu_next(); Serial.println("[touch] menu right -> next"); }
+        else                     { audioRibbit();    pet_menu_select(); }
+      }
+      else if (g_startX < 70)       { audioBlip(false); pet_prev_page(); Serial.println("[touch] left edge -> prev page"); }
       else if (g_startX > 250) { audioBlip(true);  pet_next_page(); Serial.println("[touch] right edge -> next page"); }
       else if (g_startY < 150) { audioBlip(true);  brightness_apply(g_bright + BL_STEP, /*persist=*/true); show_ack(g_bright, true); }
       else if (g_startY > 330) { audioBlip(false); brightness_apply(g_bright - BL_STEP, /*persist=*/true); show_ack(g_bright, false); }

@@ -38,3 +38,21 @@ The host sends compact serial payloads containing queue state, token count, rema
 ## Verification snapshot
 
 The live build/flash was verified on `COM3` before this snapshot was prepared. See `../docs/CODEXBAR-HUD-PROOF.md` for the serial/build evidence captured during the Discord run.
+
+
+## Pinned HUD / error / success update
+
+Added after the first closeout:
+
+- Pinned CodexBar HUD mode via `PAGE|pin` / `PAGE|unpin`, so accidental swipes do not hide the quota page.
+- Long-press center touch opens a tiny quick menu. Edge taps cycle menu choices; center tap selects.
+- Real error state: host sync can send `STATE|dizzy|5000` when CodexBar/ERP/serial data fails.
+- Real success state: host sync can send `STATE|celebrate|4500` when a previously running queue becomes done.
+- Tiny CodexBar ticker: long status/error messages scroll in the HUD footer.
+- Host-side bridge source supports `forceState` / `forceMs` in the status JSON.
+
+Rollback source backup on Atom host:
+
+```text
+/home/axezii/atom/ψ/backups/esp32-deskpet/20260706-122101
+```

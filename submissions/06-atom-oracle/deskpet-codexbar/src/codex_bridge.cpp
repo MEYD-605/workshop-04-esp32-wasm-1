@@ -74,6 +74,9 @@ static void handleStatus() {
   long resetClaude=server.arg("resetClaude").length()?server.arg("resetClaude").toInt():-1;
   long resetClaudeWeek=server.arg("resetCwk").length()?server.arg("resetCwk").toInt():-1;
   String msg=server.arg("msg");
+  String forceState=server.arg("forceState");
+  uint32_t forceMs=server.arg("forceMs").length()?(uint32_t)server.arg("forceMs").toInt():0;
+  String pagePin=server.arg("pagePin");
   if (server.hasArg("plain") && server.arg("plain").length()) {
     StaticJsonDocument<512> doc;
     DeserializationError err = deserializeJson(doc, server.arg("plain"));
@@ -84,11 +87,16 @@ static void handleStatus() {
       pctGrok=doc["grok"] | pctGrok; pctClaude=doc["claude"] | pctClaude; pctClaudeWeek=doc["cwk"] | pctClaudeWeek;
       resetGrok=doc["resetGrok"] | resetGrok; resetClaude=doc["resetClaude"] | resetClaude; resetClaudeWeek=doc["resetCwk"] | resetClaudeWeek;
       msg=(const char*)(doc["msg"] | msg.c_str());
+      forceState=(const char*)(doc["forceState"] | forceState.c_str());
+      forceMs=doc["forceMs"] | forceMs;
+      pagePin=(const char*)(doc["pagePin"] | pagePin.c_str());
     }
   }
   if (!msg.length()) msg = running ? "Codex working" : waiting ? "Codex waiting" : "Codex idle";
   applyStatus(total, running, waiting, msg.c_str(), tokens, pct5h, reset5h, pct7d, reset7d,
               pctGrok, pctClaude, pctClaudeWeek, resetGrok, resetClaude, resetClaudeWeek);
+  if (pagePin.length()) { pagePin.trim(); pagePin.toLowerCase(); pet_set_page_pinned(pagePin == "1" || pagePin == "true" || pagePin == "on"); }
+  if (forceState.length()) { forceState.trim(); pet_force_state(forceState.c_str(), forceMs ? forceMs : 3500); }
   sendText(200, "ok status applied");
 }
 
@@ -307,6 +315,9 @@ static void handleSerialConfig() {
         String page = line.substring(5); page.trim(); page.toLowerCase();
         if (page == "next") pet_next_page();
         else if (page == "prev" || page == "previous") pet_prev_page();
+        else if (page == "pin" || page == "pinned" || page == "lock") pet_set_page_pinned(true);
+        else if (page == "unpin" || page == "unlock") pet_set_page_pinned(false);
+        else if (page == "togglepin") pet_set_page_pinned(!pet_page_pinned());
         else pet_set_page((uint8_t)page.toInt());
         Serial.printf("[bridge] serial page applied: %s\n", page.c_str());
       } else if (line.startsWith("STATE|")) {

@@ -14,10 +14,12 @@ PAGE=${11:-}
 RESET_GROK=${12:--1}
 RESET_CLAUDE=${13:--1}
 RESET_CWK=${14:--1}
+FORCE_STATE=${15:-}
+FORCE_MS=${16:-0}
 REMOTE=${ATOM_ESP32_REMOTE:-axeziiezakk@axeziiezakk-main}
-python3 - <<'PY' "$STATE" "$MSG" "$TOKENS" "$PCT5H" "$RESET5H" "$PCT7D" "$RESET7D" "$GROK" "$CLAUDE" "$CWK" "$PAGE" "$REMOTE" "$RESET_GROK" "$RESET_CLAUDE" "$RESET_CWK"
+python3 - <<'PY' "$STATE" "$MSG" "$TOKENS" "$PCT5H" "$RESET5H" "$PCT7D" "$RESET7D" "$GROK" "$CLAUDE" "$CWK" "$PAGE" "$REMOTE" "$RESET_GROK" "$RESET_CLAUDE" "$RESET_CWK" "$FORCE_STATE" "$FORCE_MS"
 import base64, json, subprocess, sys
-_, state, msg, tokens, pct5h, reset5h, pct7d, reset7d, grok, claude, cwk, page, remote, reset_grok, reset_claude, reset_cwk = sys.argv
+_, state, msg, tokens, pct5h, reset5h, pct7d, reset7d, grok, claude, cwk, page, remote, reset_grok, reset_claude, reset_cwk, force_state, force_ms = sys.argv
 state = state.strip().lower()
 if state == "busy":
     payload = {"total": 1, "running": 1, "waiting": 0}
@@ -41,6 +43,12 @@ payload["resetClaude"] = int(reset_claude or -1)
 payload["resetCwk"] = int(reset_cwk or -1)
 if page != "":
     payload["page"] = page
+if force_state != "":
+    payload["forceState"] = force_state
+    try:
+        payload["forceMs"] = int(force_ms or 3500)
+    except Exception:
+        payload["forceMs"] = 3500
 raw = json.dumps(payload, ensure_ascii=False)
 ps = r'''
 $ErrorActionPreference = 'Stop'

@@ -10,6 +10,7 @@ SET_STATUS = Path("/home/axezii/atom/scripts/atom-esp32-set-status.sh")
 CODEXBAR = os.getenv("CODEXBAR_BIN", "/home/axezii/.local/bin/codexbar")
 CACHE = Path("/home/axezii/atom/tmp/atom_esp32_quota_cache.json")
 ERP_FEED = Path("/home/axezii/.openclaw/workspace/codexbar_erp.json")
+WORK_CACHE = Path("/home/axezii/atom/tmp/atom_esp32_work_state.json")
 
 def counts():
     out = {"running": 0, "pending": 0, "failed": 0, "done": 0}
@@ -163,24 +164,59 @@ def quota():
     save_quota_cache(result)
     return result
 
+def load_work_cache():
+    try:
+        return json.loads(WORK_CACHE.read_text(encoding="utf-8"))
+    except Exception:
+        return {}
+
+def save_work_cache(q):
+    WORK_CACHE.parent.mkdir(parents=True, exist_ok=True)
+    tmp = WORK_CACHE.with_suffix(".tmp")
+    tmp.write_text(json.dumps({"updatedAt": datetime.now(timezone.utc).isoformat(), "queue": q}, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+    tmp.replace(WORK_CACHE)
+
+def runtime_event(q, qu):
+    prev = (load_work_cache().get("queue") or {})
+    event = {"forceState": "", "forceMs": 0, "page": "pin", "ticker": ""}
+    errors = qu.get("errors") or []
+    if errors:
+        event["forceState"] = "dizzy"
+        event["forceMs"] = 5000
+        event["ticker"] = ("ERR " + errors[0])[:70]
+    else:
+        try:
+            prev_running = int(prev.get("running", 0))
+            prev_done = int(prev.get("done", 0))
+        except Exception:
+            prev_running = prev_done = 0
+        if prev_running > 0 and q.get("running", 0) == 0 and q.get("done", 0) >= prev_done:
+            event["forceState"] = "celebrate"
+            event["forceMs"] = 4500
+            event["ticker"] = "job complete"
+    return event
+
 def main():
     q = counts()
     qu = quota()
+    event = runtime_event(q, qu)
     if q["running"] > 0:
         state = "busy"
     elif q["pending"] > 0:
         state = "attention"
     else:
         state = "idle"
-    msg = f"WB run {q['running']} wait {q['pending']} fail {q['failed']}"
+    msg = event.get("ticker") or f"WB run {q['running']} wait {q['pending']} fail {q['failed']}"
     cmd = [
         str(SET_STATUS), state, msg, "0",
         str(qu["pct5h"]), str(qu["reset5h"]), str(qu["pct7d"]), str(qu["reset7d"]),
-        str(qu["grok"]), str(qu["claude"]), str(qu["cwk"]), "",
+        str(qu["grok"]), str(qu["claude"]), str(qu["cwk"]), event.get("page", ""),
         str(qu["resetGrok"]), str(qu["resetClaude"]), str(qu["resetCwk"]),
+        event.get("forceState", ""), str(event.get("forceMs", 0)),
     ]
     subprocess.run(cmd, check=True)
-    summary = {"state": state, "queue": q, "quota": qu, "sent": cmd[1:]}
+    save_work_cache(q)
+    summary = {"state": state, "queue": q, "quota": qu, "event": event, "sent": cmd[1:]}
     print(json.dumps(summary, ensure_ascii=False))
 
 if __name__ == "__main__":

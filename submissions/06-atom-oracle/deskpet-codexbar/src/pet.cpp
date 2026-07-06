@@ -62,6 +62,10 @@ static long     s_resetGrok = -1;
 static long     s_resetClaude = -1;
 static long     s_resetCWk = -1;
 static uint8_t  s_page     = 0;               // 0=pet, 1=CodexBar quota HUD
+static bool     s_pagePinned = false;          // pinned HUD ignores accidental page-swipe changes
+static bool     s_menuActive = false;          // long-press quick menu
+static uint8_t  s_menuIndex  = 0;
+static uint32_t s_menuUntil  = 0;
 static const uint8_t PAGE_PET = 0;
 static const uint8_t PAGE_CODEXBAR = 1;
 static const uint8_t PAGE_COUNT = 2;
@@ -138,12 +142,57 @@ static void drawCodexbarHUD() {
   snprintf(st, sizeof(st), "run %d  wait %d", s_running, s_waiting);
   spr.drawString(st, 20, 386);
   if (s_msg[0]) {
-    char msg[34]; snprintf(msg, sizeof(msg), "%.32s", s_msg);
+    char msg[34];
+    size_t len = strlen(s_msg);
+    if (len > 32) {
+      size_t start = (millis() / 450) % len;
+      for (size_t i = 0; i < 32; i++) msg[i] = s_msg[(start + i) % len];
+      msg[32] = 0;
+    } else {
+      snprintf(msg, sizeof(msg), "%s", s_msg);
+    }
     spr.drawString(msg, 20, 416);
   }
   spr.drawFastHLine(0, PET_H - 34, PET_W, pal.textDim);
   spr.setTextSize(1);
-  spr.drawString("swipe L/R or tap edge", 20, PET_H - 24);
+  spr.drawString(s_pagePinned ? "pinned HUD / hold center" : "swipe L/R or hold center", 20, PET_H - 24);
+}
+
+static const char* menuLabel(uint8_t i) {
+  switch (i % 4) {
+    case 0: return "Pet page";
+    case 1: return "Codex HUD";
+    case 2: return s_pagePinned ? "Unpin HUD" : "Pin HUD";
+    default: return "System test";
+  }
+}
+
+static void drawQuickMenu() {
+  if (!s_menuActive) return;
+  uint32_t now = millis();
+  if (now > s_menuUntil) { s_menuActive = false; return; }
+  const int x = 26, y = 118, w = 268, h = 214;
+  spr.fillRoundRect(x, y, w, h, 12, 0x18E3);
+  spr.drawRoundRect(x, y, w, h, 12, pal.textDim);
+  spr.setTextDatum(textdatum_t::top_left);
+  spr.setTextSize(2);
+  spr.setTextColor(pal.text);
+  spr.drawString("Atom quick menu", x + 18, y + 16);
+  spr.setTextSize(1);
+  spr.setTextColor(pal.textDim);
+  spr.drawString("edge: move   center: select", x + 18, y + 44);
+  for (uint8_t i = 0; i < 4; i++) {
+    int yy = y + 72 + i * 32;
+    bool sel = (i == (s_menuIndex % 4));
+    if (sel) spr.fillRoundRect(x + 14, yy - 4, w - 28, 26, 7, 0x2945);
+    spr.setTextColor(sel ? pal.text : pal.textDim);
+    char line[40]; snprintf(line, sizeof(line), "%c %s", sel ? '>' : ' ', menuLabel(i));
+    spr.setTextSize(2);
+    spr.drawString(line, x + 24, yy);
+  }
+  spr.setTextSize(1);
+  spr.setTextColor(pal.textDim);
+  spr.drawString("top/bottom = brightness", x + 18, y + h - 24);
 }
 
 // --- AnimatedGIF state ----------------------------------------------------
@@ -369,10 +418,38 @@ void pet_set_page(uint8_t page) {
   if (s_page == page) { pet_force_redraw(); return; }
   s_page = page;
   pet_force_redraw();
-  Serial.printf("[pet] page -> %u\n", (unsigned)s_page);
+  Serial.printf("[pet] page -> %u%s\n", (unsigned)s_page, s_pagePinned ? " pinned" : "");
 }
-void pet_next_page() { pet_set_page((uint8_t)((s_page + 1) % PAGE_COUNT)); }
-void pet_prev_page() { pet_set_page((uint8_t)((s_page + PAGE_COUNT - 1) % PAGE_COUNT)); }
+void pet_next_page() {
+  if (s_pagePinned && s_page == PAGE_CODEXBAR) { Serial.println("[pet] page pinned; next ignored"); pet_force_redraw(); return; }
+  pet_set_page((uint8_t)((s_page + 1) % PAGE_COUNT));
+}
+void pet_prev_page() {
+  if (s_pagePinned && s_page == PAGE_CODEXBAR) { Serial.println("[pet] page pinned; prev ignored"); pet_force_redraw(); return; }
+  pet_set_page((uint8_t)((s_page + PAGE_COUNT - 1) % PAGE_COUNT));
+}
+void pet_set_page_pinned(bool pinned) {
+  s_pagePinned = pinned;
+  if (s_pagePinned) s_page = PAGE_CODEXBAR;
+  pet_force_redraw();
+  Serial.printf("[pet] page pin -> %s\n", s_pagePinned ? "on" : "off");
+}
+bool pet_page_pinned() { return s_pagePinned; }
+void pet_menu_open() { s_menuActive = true; s_menuUntil = millis() + 7000; pet_force_redraw(); Serial.println("[pet] menu open"); }
+void pet_menu_next() { s_menuIndex = (uint8_t)((s_menuIndex + 1) % 4); s_menuUntil = millis() + 7000; pet_force_redraw(); }
+void pet_menu_prev() { s_menuIndex = (uint8_t)((s_menuIndex + 3) % 4); s_menuUntil = millis() + 7000; pet_force_redraw(); }
+void pet_menu_select() {
+  switch (s_menuIndex % 4) {
+    case 0: s_pagePinned = false; pet_set_page(PAGE_PET); break;
+    case 1: pet_set_page(PAGE_CODEXBAR); break;
+    case 2: pet_set_page_pinned(!s_pagePinned); break;
+    default: pet_force_state("dizzy", 1800); break;
+  }
+  s_menuActive = false;
+  pet_force_redraw();
+  Serial.printf("[pet] menu select -> %s\n", menuLabel(s_menuIndex));
+}
+bool pet_menu_active() { return s_menuActive && millis() <= s_menuUntil; }
 
 void pet_setup() {
   // ALLOCATE THE SPRITE FIRST — before any AnimatedGIF/JSON allocation — so the
@@ -660,6 +737,10 @@ static bool tick_frame() {
 bool pet_tick() {
   bool changed = tick_frame();
   if (changed) drawHUD();
+  if (changed || pet_menu_active()) {
+    drawQuickMenu();
+    changed = true;
+  }
   return changed;
 }
 

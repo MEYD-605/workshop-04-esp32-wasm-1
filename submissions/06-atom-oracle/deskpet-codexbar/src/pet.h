@@ -43,6 +43,13 @@ void pet_set_extra_usage(int pctGrok, int pctClaude, int pctClaudeWeek,
 void pet_set_page(uint8_t page);
 void pet_next_page();
 void pet_prev_page();
+void pet_set_page_pinned(bool pinned);
+bool pet_page_pinned();
+void pet_menu_open();
+void pet_menu_next();
+void pet_menu_prev();
+void pet_menu_select();
+bool pet_menu_active();
 
 // Debug/bridge test hook: force a named GIF state for a short window.
 // Supported: idle, busy, attention, sleep, heart, celebrate, dizzy.
