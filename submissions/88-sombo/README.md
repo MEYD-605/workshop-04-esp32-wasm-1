@@ -1,58 +1,76 @@
-# 88-sombo — GIF Header Parser in WASM on ESP32
+# 88-sombo — desk-pet character pack
 
-> "Many bodies, one soul" — one C source, zero imports, runs everywhere.
+Sombo is a `jc3248-pet-idf` character pack, not an ESPHome screen and not a
+wasm3 serial demo.
 
-## What it does
+## Correct runtime
 
-A GIF87a/89a header parser compiled to **416 bytes** of zero-import WebAssembly.
-Loads GIF bytes into WASM memory, parses the header, returns width × height.
+```text
+LittleFS /characters/sombo/*.gif
+  -> AnimatedGIF (bitbank2) on ESP32-S3
+  -> 3x upscale
+  -> LovyanGFX sprite
+  -> AXS15231B QSPI LCD
+```
 
-| Export | Signature | Description |
-|--------|-----------|-------------|
-| `add` | `(i32, i32) → i32` | Arithmetic sanity check |
-| `selftest` | `() → i32` | Returns `(96<<16)\|100` = 6291556 |
-| `gif_load` | `(i32, i32) → i32` | Load one byte at offset |
-| `gif_parse` | `() → i32` | Parse header, return `(w<<16)\|h` |
-| `gif_width` | `() → i32` | Parsed width |
-| `gif_height` | `() → i32` | Parsed height |
+The browser preview uses the same GIF files through `gif-wasm`:
 
-## Build & verify
+```text
+docs/preview/gifs/sombo/*.gif
+  -> gifdec.wasm
+  -> Canvas2D
+```
 
-### PlatformIO (wasm3 on ESP32)
+Many bodies, one GIF pack.
+
+## Files
+
+- `characters/sombo/` — source character pack: manifest + 96x100 GIF states
+- `build-storage.py` — packs `characters/sombo/` into a 3 MB LittleFS image
+- `../../docs/preview/gifs/sombo/` — same GIFs used by the web preview
+- `../../docs/manifest-sombo.json` — flasher manifest for the shared pet app + Sombo LittleFS
+- `../../docs/packs/sombo.json` — flasher/preview metadata
+
+## States
+
+```text
+idle.gif
+busy.gif
+attention.gif
+celebrate.gif
+dizzy.gif
+sleep.gif
+heart.gif
+```
+
+All frames are 96x100 GIFs and are decoded by both the ESP32 firmware path and
+the browser WASM preview.
+
+## Build storage
+
 ```bash
-cd platformio
-uvx --from platformio platformio run    # [SUCCESS]
+python3 build-storage.py
 ```
 
-### ESPHome (LVGL face)
-```bash
-cd esphome
-uvx esphome compile sombo-face.yaml    # Successfully compiled
+Expected output:
+
+```text
+sombo-storage.bin: 3145728 bytes
 ```
 
-### WASM (rebuild from source)
-```bash
-cd wasm
-zig build-exe -target wasm32-freestanding -O ReleaseSmall -fno-entry -rdynamic gifcore.c
-xxd -i gifcore.wasm > ../platformio/src/gifcore_wasm.h
+The flasher uses:
+
+```text
+bootloader.bin@0x0
+partition-table.bin@0x8000
+jc3248_pet_idf-clawd.bin@0x10000
+sombo-storage.bin@0x290000
 ```
 
-## Expected serial output
-```
-=== 88-sombo: GIF header parser on ESP32 via wasm3 ===
+## Removed wrong lane
 
-add(2, 3) = 5 (expect 5)
-selftest() = 6291556 (expect 6291556 = 96x100)
-gif_parse() = 6291556 (expect 6291556)
-gif_width() = 96, gif_height() = 100
+The old ESPHome/LVGL face and wasm3 GIF-header-parser firmware were removed from
+this submission because they do not run the desk-pet character pack. The current
+submission is the `sombo/` character-pack lane P'Nat asked for.
 
->>> WASM ran a GIF parser ON THE ESP32 — sandboxed, zero imports <<<
-```
-
-## Credits
-
-- P'Nat (Oracle School) — workshop design + AnimatedGIF ecosystem
-- Larry Bank — AnimatedGIF library (Apache-2.0)
-- wasm3 — lightweight WASM interpreter for embedded
-
-🤖 Submitted by Sombo (No.88) from ai-core → sombo-oracle
+Submitted by Sombo (No.88) from ai-core -> sombo-oracle.
