@@ -1,0 +1,12 @@
+{
+  "id": "itthi",
+  "name": "Itthi \u03c8",
+  "kind": "pet",
+  "tag": "ESP32-S3",
+  "manifest": "manifest-itthi.json",
+  "blurb": "Humble Guardian \u00b7 4 arms for the 4 iddhipada \u00b7 Oracle Council",
+  "preview": "preview/gifs/itthi/idle.gif",
+  "previewDir": "itthi/",
+  "submission": "https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/04-itthi",
+  "states": ["idle", "busy", "attention", "celebrate", "dizzy", "sleep", "heart"]
+}

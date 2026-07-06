@@ -1,0 +1,19 @@
+{
+  "name": "sombo",
+  "colors": {
+    "body": "#60A5FA",
+    "bg": "#0B1020",
+    "text": "#FFFFFF",
+    "textDim": "#94A3B8",
+    "ink": "#111827"
+  },
+  "states": {
+    "idle": "idle.gif",
+    "busy": "busy.gif",
+    "attention": "attention.gif",
+    "celebrate": "celebrate.gif",
+    "dizzy": "dizzy.gif",
+    "sleep": "sleep.gif",
+    "heart": "heart.gif"
+  }
+}

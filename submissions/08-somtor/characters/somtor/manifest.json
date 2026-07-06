@@ -1,0 +1,1 @@
+{"name":"somtor","colors":{"body":"#FFD24A","bg":"#0B0F1A","text":"#F4F1EA","textDim":"#8A8A99","ink":"#0A1E0F"},"states":{"idle":["idle.gif"],"busy":"busy.gif","celebrate":"celebrate.gif","sleep":"sleep.gif","attention":"attention.gif"}}

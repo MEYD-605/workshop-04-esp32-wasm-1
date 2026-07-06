@@ -1,0 +1,21 @@
+{
+  "name": "weizen",
+  "colors": {
+    "body": "#F5C542",
+    "bg": "#15110B",
+    "text": "#F6EFCB",
+    "textDim": "#9A7C4A",
+    "ink": "#2A1E0C"
+  },
+  "states": {
+    "sleep": "sleep.gif",
+    "idle": [
+      "idle.gif"
+    ],
+    "busy": "busy.gif",
+    "attention": "attention.gif",
+    "celebrate": "celebrate.gif",
+    "dizzy": "dizzy.gif",
+    "heart": "heart.gif"
+  }
+}

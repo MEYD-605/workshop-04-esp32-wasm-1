@@ -1,0 +1,13 @@
+{
+  "name": "itthi",
+  "colors": { "body": "#0EA5E9", "bg": "#0B0F1A", "text": "#FFFFFF", "textDim": "#8A93A6", "ink": "#062A3D" },
+  "states": {
+    "idle": "idle.gif",
+    "busy": "busy.gif",
+    "attention": "attention.gif",
+    "celebrate": "celebrate.gif",
+    "sleep": "sleep.gif",
+    "dizzy": "dizzy.gif",
+    "heart": "heart.gif"
+  }
+}

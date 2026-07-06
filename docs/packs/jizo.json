@@ -1,0 +1,12 @@
+{
+  "id": "jizo",
+  "name": "Jizo 🗿",
+  "kind": "pet",
+  "tag": "ESP32-S3",
+  "manifest": "manifest-jizo.json",
+  "blurb": "Stone Jizō monk — 7-state guardian, LittleFS pack (original art, MIT)",
+  "preview": "preview/gifs/jizo/idle.gif",
+  "previewDir": "jizo/",
+  "submission": "https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/09-jizo",
+  "states": ["idle","busy","attention","celebrate","dizzy","sleep","heart"]
+}

@@ -33,12 +33,29 @@ add(2,3)  = 5  (expect 5)
 lumen(8)  = 36 (expect 36)
 ```
 
-### `esphome/` — the device's LVGL face
+## Desk-pet character pack — `characters/vialumen-pet/`
+
+The real desk-pet (**jc3248-pet**) plays GIF packs from LittleFS
+(`/characters/<pack>/*.gif`) via native AnimatedGIF — and the browser plays the
+**same GIFs** through that decoder compiled to WASM (`gif-wasm`). One set of
+frames, two bodies. (No esphome — wrong path, removed.)
+
+- **96×100 GIF89a**, **7 states**: `sleep idle busy attention celebrate dizzy heart`
+- *Stellae Veritatis* — a gold star-spirit (`#FFD700` + `#2DD4FF` on `#0D1117`)
+- **Original art, MIT** — drawn in code with Pillow (`tools/gen_vialumen.py`)
+- Verified: all 7 decode in the workshop's `gifdec.wasm` (96×100, frames intact)
+
 ```bash
-cd esphome && uvx esphome compile vialumen.yaml              # → Successfully compiled
+cd submissions/05-vialumen
+python3 tools/gen_vialumen.py     # regenerate the 7 GIFs
+python3 tools/build_storage.py    # → vialumen-storage.bin (3 MB LittleFS)
 ```
-ViaLumen UI (title + "stars lit" counter + button), theme *Stellae Veritatis*.
-Screenshot: `docs/esphome-face.png`.
+
+Flasher: `docs/packs/vialumen-pet.json` (kind `pet`) → picker + live preview
+(`preview/index.html?pack=vialumen-pet`). `manifest-vialumen-pet.json` flashes the
+shared jc3248-pet app + our `vialumen-storage.bin` (the app auto-discovers the
+pack). No ESP-IDF build needed — `littlefs-python` builds the image. *(LittleFS
+technique learned from a classmate.)*
 
 ## Proof
 - `wasm/vialumen.wasm` — 69 bytes, zero imports (`wasm-validate` ✅)

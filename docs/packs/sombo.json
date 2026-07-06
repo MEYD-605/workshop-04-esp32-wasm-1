@@ -1,12 +1,13 @@
 {
   "id": "sombo",
-  "name": "Sombo \ud83d\udee1\ufe0f",
-  "kind": "firmware",
-  "tag": "ESP32",
+  "name": "Sombo robot \ud83e\udd16",
+  "kind": "pet",
+  "tag": "ESP32-S3",
   "manifest": "manifest-sombo.json",
-  "blurb": "GIF header parser \u2014 gif_parse \u2192 96\u00d7100",
+  "preview": "preview/gifs/sombo/idle.gif",
+  "blurb": "robot desk-pet \u2014 LittleFS GIF pack decoded by gif-wasm",
   "submission": "https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/88-sombo",
-  "previewDir": "sombo-pet/",
+  "previewDir": "sombo/",
   "states": [
     "idle",
     "busy",

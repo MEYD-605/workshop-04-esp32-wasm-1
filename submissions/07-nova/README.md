@@ -31,3 +31,4 @@ Both covers: black-gold luxury, IP-clean (self-generated Python/Pillow), 5-lens 
 - Character pack: characters/novamon/ (7 GIFs + manifest.json)
 - Book 1: book/Many-Bodies-One-Soul-Novamon.pdf + cover
 - Book 2: book/From-Zip-to-Fleet.pdf + cover
+- Knowledge: `knowledge/CHEATSHEET.md` (copy-paste commands) + `knowledge/LEARNINGS.md` (12 traps + 4 lessons)

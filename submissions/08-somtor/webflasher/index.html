@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>สมต่อ 🐝 ESP32 Web Flasher</title>
+    <script
+      type="module"
+      src="https://unpkg.com/esp-web-tools@9.4.3/dist/web/install-button.js?module"
+    ></script>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #16120a;
+        --panel: #211a0e;
+        --line: #4a3d1f;
+        --text: #fbf3df;
+        --muted: #c3b389;
+        --honey: #ffd24a;
+        --amber: #f8b038;
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: radial-gradient(120% 90% at 50% 0%, #241a0c 0%, var(--bg) 70%);
+        color: var(--text);
+        font-family:
+          "Sarabun", Inter, ui-sans-serif, system-ui, -apple-system,
+          BlinkMacSystemFont, "Segoe UI", sans-serif;
+      }
+      main {
+        width: min(760px, calc(100vw - 32px));
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 12px;
+        padding: 28px;
+      }
+      .head {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-bottom: 6px;
+      }
+      .pet {
+        width: 96px;
+        height: 96px;
+        image-rendering: pixelated;
+        border: 1px solid var(--line);
+        border-radius: 10px;
+        background: #0d0a05;
+        flex: none;
+      }
+      h1 {
+        margin: 0;
+        font-size: clamp(28px, 6vw, 46px);
+        line-height: 1.05;
+      }
+      .accent { color: var(--honey); }
+      p { color: var(--muted); line-height: 1.6; }
+      .facts {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 10px;
+        margin: 20px 0 26px;
+      }
+      .fact {
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        padding: 12px;
+        background: #15110a;
+      }
+      .fact b { display: block; color: var(--amber); margin-bottom: 4px; }
+      esp-web-install-button {
+        --esp-tools-button-color: var(--honey);
+        --esp-tools-button-text-color: #1a1304;
+        --esp-tools-button-border-radius: 8px;
+      }
+      button {
+        border: 0;
+        border-radius: 8px;
+        padding: 13px 20px;
+        background: var(--honey);
+        color: #1a1304;
+        font-weight: 700;
+        font-size: 15px;
+        cursor: pointer;
+      }
+      code { color: var(--amber); }
+      .foot { font-size: 13px; margin-top: 22px; }
+    </style>
+  </head>
+  <body>
+    <main>
+      <div class="head">
+        <img class="pet" src="./idle.gif" alt="สมต่อ desk-pet idle animation" />
+        <h1>สมต่อ <span class="accent">🐝 ESP32</span></h1>
+      </div>
+      <p>
+        Flash <b>สมต่อ desk-pet</b> ลงบอร์ด <b>Guition JC3248W535C</b>
+        (ESP32-S3 + 3.5" QSPI IPS). Firmware เป็น WASM-decoded GIF player —
+        opendir scan <code>/littlefs/characters/&lt;name&gt;/</code> แล้วเล่น 5 ท่า
+        (idle · busy · celebrate · sleep · attention). Many bodies, one soul. 🕯️
+      </p>
+      <section class="facts" aria-label="firmware facts">
+        <div class="fact"><b>chip</b><span>ESP32-S3 · 16MB · 8MB PSRAM</span></div>
+        <div class="fact"><b>storage</b><span>3MB littlefs · 96×96 GIF</span></div>
+        <div class="fact"><b>poses</b><span>idle/busy/celebrate/sleep/attention</span></div>
+      </section>
+      <esp-web-install-button manifest="manifest.json">
+        <button slot="activate">เชื่อมต่อบอร์ด แล้ว flash สมต่อ 🐝</button>
+        <span slot="unsupported">
+          ใช้ Chrome หรือ Edge บน desktop — ต้องมี Web Serial
+        </span>
+        <span slot="not-allowed">
+          เปิดหน้านี้ผ่าน HTTPS หรือ localhost ก่อน flash
+        </span>
+      </esp-web-install-button>
+      <p class="foot">
+        Manifest: <code>manifest.json</code> (ESP32-S3, 4 parts).
+        Bins อยู่ใน <code>firmware/</code> — self-contained, เสิร์ฟผ่าน HTTPS/localhost ได้เลย.
+      </p>
+    </main>
+  </body>
+</html>

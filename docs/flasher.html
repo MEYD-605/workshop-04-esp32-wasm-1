@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>WASM-on-ESP32 Workshop · Web Flasher</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script type="module" src="https://unpkg.com/esp-web-tools@9.4.3/dist/web/install-button.js?module"></script>
+  <style>
+    :root { color-scheme: dark; --ink:#06070a; --coal:#0e0f12; --dusk:#16171b; --embers:#23232a; --ash:#8a8a93; --chalk:#e8e6df; --glow:#f59e0b; --cyan:#3AD6E0; }
+    * { box-sizing: border-box; }
+    body { margin: 0 auto; padding: 2.75rem 2.25rem; max-width: 1280px;
+      font: 15px/1.6 -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, system-ui, sans-serif;
+      background: radial-gradient(50% 45% at 15% 0%, rgba(245,158,11,.10) 0%, rgba(245,158,11,.03) 35%, transparent 70%), var(--ink);
+      color: var(--chalk); min-height: 100vh; }
+    .cols { display: grid; gap: 0 1.75rem; grid-template-columns: 1fr; align-items: start; margin-top: 1.25rem; }
+    @media (min-width: 900px) { .cols { grid-template-columns: minmax(0, 1fr) 392px; } }
+    .pvpanel { position: sticky; top: 1.5rem; }
+    .psi { color: var(--glow); text-shadow: 0 0 12px rgba(245,158,11,.55), 0 0 36px rgba(245,158,11,.25); }
+    .kicker { font: 600 11px/1 ui-monospace, "JetBrains Mono", monospace; letter-spacing:.18em; text-transform:uppercase; color:var(--glow); }
+    h1 { font-weight: 600; font-size: 2.0rem; margin: .6rem 0 .3rem; letter-spacing: -.01em; }
+    .sub { color: var(--ash); margin: 0 0 1.4rem; max-width: 60ch; }
+    .lede { color: var(--chalk); margin: 0 0 2rem; max-width: 64ch; }
+    .lede b { color: var(--cyan); }
+    .panel { border: 1px solid var(--embers); border-radius: 14px; padding: 1.5rem; background: var(--coal); margin: 1.25rem 0; }
+    .panel h2 { margin: 0 0 1rem; font-size: 1rem; font-weight: 600; }
+    .packs { display: grid; grid-template-columns: 1fr; gap: .5rem; }
+    .pack { display: flex; align-items: center; gap: .8rem; cursor: pointer; border: 1px solid var(--embers); border-radius: 10px; padding: .6rem .85rem; background: var(--ink); transition: border-color .15s, background .15s; }
+    .pack:hover { border-color: rgba(245,158,11,.4); }
+    .pack.sel { border-color: var(--glow); background: var(--dusk); box-shadow: 0 0 0 1px var(--glow) inset; }
+    .pack .num { flex: 0 0 auto; font: 600 12px/1 ui-monospace, "JetBrains Mono", monospace; letter-spacing: .1em; color: var(--ash); opacity: .5; }
+    .pack.sel .num { color: var(--glow); opacity: 1; }
+    .pack .thumb { width: 48px; height: 48px; flex: 0 0 48px; object-fit: cover; border-radius: 8px; background: #000; image-rendering: pixelated; }
+    .pack .nm { font-weight: 600; }
+    .pack .nm small { display:block; color: var(--ash); font-weight: 400; font-size: 11.5px; }
+    .prevcap { font-size: 12px; color: var(--ash); text-align: center; margin: 0 0 .8rem; }
+    .prevwrap { display: flex; justify-content: center; }
+    .device { border-radius: 24px; padding: 13px; background: linear-gradient(to bottom, #1a1b20, #0c0d10); box-shadow: 0 30px 60px -25px rgba(0,0,0,.9), inset 0 0 0 1px rgba(255,255,255,.08); }
+    .bezel { display:flex; align-items:center; justify-content:center; gap:8px; padding: 1px 0 9px; }
+    .bezel .slit { width:42px; height:4px; border-radius:99px; background: rgba(255,255,255,.10); }
+    .bezel .cam  { width:4px;  height:4px; border-radius:99px; background: rgba(255,255,255,.16); }
+    .screen { overflow:hidden; border-radius:11px; background:#000; box-shadow: inset 0 0 0 1px rgba(0,0,0,.6); }
+    #preview { display:block; width:320px; height:480px; border:0; background:#000; }
+    .board { padding-top:9px; text-align:center; font: 9px/1 ui-monospace, monospace; letter-spacing:.16em; text-transform:uppercase; color: rgba(138,138,147,.55); }
+    .install { margin-top: 1.4rem; min-height: 48px; }
+    esp-web-install-button { --esp-tools-button-color: var(--glow); --esp-tools-button-text-color: var(--ink); }
+    code { background: var(--embers); padding: 1px 6px; border-radius: 4px; font: .9em ui-monospace, monospace; }
+    .note { font-size: 12.5px; color: var(--ash); margin-top: 1rem; }
+    .note b { color: var(--chalk); }
+    a { color: var(--glow); }
+    .unsupported { display:none; color:#ff8a8a; border:1px solid #5a2222; background:#1a0c0c; padding:.8rem 1rem; border-radius:10px; }
+    .backlink { display:inline-block; color:var(--ash,#a4a4ad); font-size:13px; margin-bottom:14px; }
+    .backlink:hover { color:var(--glow); }
+    .links { display:flex; flex-wrap:wrap; gap:.6rem; margin-top:.6rem; }
+    .links a { display:inline-block; border:1px solid var(--embers); border-radius:8px; padding:.4rem .7rem; text-decoration:none; color:var(--chalk); font-size:13px; }
+    .links a:hover { border-color:var(--glow); }
+    .fw { border-top:1px solid var(--embers); padding:.85rem 0; }
+    .fw:first-of-type { border-top:0; }
+    .fw .h { display:flex; align-items:baseline; gap:.5rem; flex-wrap:wrap; }
+    .fw .h b { font-size:14px; } .fw .h .tag { font:600 10px/1 ui-monospace,monospace; letter-spacing:.1em; text-transform:uppercase; color:var(--cyan); border:1px solid var(--embers); border-radius:5px; padding:2px 5px; }
+    .fw p { margin:.3rem 0 .5rem; color:var(--ash); font-size:12.5px; }
+    .fwtools { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; }
+    .previewBtn { background:#1c2540; color:var(--chalk); border:1px solid #2c3a63; border-radius:8px; padding:.45rem .75rem; cursor:pointer; font:600 12px/1 ui-monospace,monospace; }
+    .previewBtn:hover { border-color:var(--glow); }
+    .muted { color: var(--ash); font-size: 13px; }
+    .foot { margin-top:2rem; color:var(--ash); font-size:12.5px; }
+  </style>
+</head>
+<body>
+  <a class="backlink" href="index.html">← Fleet gallery</a>
+  <p class="kicker"><span class="psi">Ψ</span> the-oracle-keeps-the-human-human · workshop</p>
+  <h1>WASM on ESP32 — Web Flasher</h1>
+  <p class="sub">Flash a live WebAssembly device straight from this browser tab — no toolchain, no esptool. Desktop Chrome / Edge / Opera (Web Serial).</p>
+  <p class="lede">This workshop runs <b>WebAssembly on a microcontroller</b>: one tiny <code>.wasm</code> in the browser, on the desktop, and <b>on the chip</b> (wasm3 + WAMR). Pick a desk-pet, or flash a classmate's submission firmware. <span class="muted">This list is generated from <code>docs/packs/*.json</code> — drop one in and it appears here automatically.</span></p>
+
+  <div class="cols">
+    <div class="left">
+      <div class="panel">
+        <h2>Desk-pet · choose a character</h2>
+        <div class="packs" id="packs"><p class="muted">loading packs…</p></div>
+      </div>
+    </div>
+
+    <div class="right">
+      <div class="pvpanel">
+        <p class="prevcap">live preview — animated GIF pack decoded by gif-wasm from the same LittleFS frames</p>
+        <div class="prevwrap">
+          <div class="device">
+            <div class="bezel"><span class="slit"></span><span class="cam"></span></div>
+            <div class="screen"><iframe id="preview" title="live pack preview" src="about:blank"></iframe></div>
+            <div class="board">ESP32-S3 · 320×480 · WASM</div>
+          </div>
+        </div>
+        <div class="install" id="install"></div>
+        <p class="note">Plug in the <b>native USB</b> port → click → pick the <code>usbmodem</code> port → Install. JC3248W535 · ESP32-S3.</p>
+        <div class="unsupported" id="unsupported">This browser can't do Web Serial. Use desktop Chrome, Edge, or Opera.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Workshop firmwares — flash a classmate's submission</h2>
+    <p class="note" style="margin-top:0;">Each is one student's <code>.wasm</code> running on the ESP32 (wasm3), hardware-verified under WAMR. Watch serial @ 115200 after flashing.</p>
+    <div id="firmwares"><p class="muted">loading…</p></div>
+  </div>
+
+  <div class="panel">
+    <h2>Add your own</h2>
+    <p class="note" style="margin-top:0;">Drop a <code>docs/packs/&lt;name&gt;.json</code> (+ your manifest/bins) — no <code>index.html</code> edits, no conflicts. CI (<code>flasher-check</code>) verifies your offset-0 part is a real <code>0xE9</code> image so nothing bricks.</p>
+    <div class="links">
+      <a href="round2.html">🦖 Round 2 · Digimon</a>
+      <a href="https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/blob/main/HOWTO.md">📖 HOWTO</a>
+      <a href="https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/blob/main/docs/WHY-WASM.md">✨ Why WASM</a>
+      <a href="https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions">📂 Submissions</a>
+    </div>
+  </div>
+
+  <p class="foot">Generated flasher by <b>esp32-oracle</b> (esp-web-tools@9.4.3) — packs load from <code>docs/packs/*.json</code>. One wasm, many runtimes. Many bodies, one soul. <span class="psi">🕯️</span></p>
+
+  <script type="module">
+    const OWNER = "the-oracle-keeps-the-human-human", REPO = "workshop-04-esp32-wasm";
+    const DEPLOY_VERSION = "2026-06-17-preview-pack-map";
+    const packsEl = document.getElementById('packs');
+    const fwEl = document.getElementById('firmwares');
+    const install = document.getElementById('install');
+    const preview = document.getElementById('preview');
+
+    function versioned(url) {
+      return `${url}${url.includes('?') ? '&' : '?'}v=${encodeURIComponent(DEPLOY_VERSION)}`;
+    }
+    function petButton(p) {
+      install.innerHTML = p.manifest
+        ? `<esp-web-install-button manifest="${versioned(p.manifest)}"></esp-web-install-button>`
+        : '<p class="muted">manifest pending</p>';
+    }
+    function petPreview(p) {
+      if (p.preview) preview.src = versioned(`preview/index.html?embed=1&pack=${encodeURIComponent(p.id)}`);
+      else preview.src = 'about:blank';
+    }
+    function packInfo(p) {
+      return [p.blurb || '', p.updated ? `updated ${p.updated}` : ''].filter(Boolean).join(' · ');
+    }
+
+    async function loadPackList() {
+      // Discover packs via the GitHub contents API → adding docs/packs/<id>.json needs NO index.html edit.
+      const api = `https://api.github.com/repos/${OWNER}/${REPO}/contents/docs/packs`;
+      const r = await fetch(api, { cache: 'no-store', headers: { 'Accept': 'application/vnd.github+json' } });
+      if (!r.ok) throw new Error('list ' + r.status);
+      const files = await r.json();
+      const ids = files.filter(f => f.name.endsWith('.json')).map(f => f.name.replace(/\.json$/, ''));
+      const packs = await Promise.all(ids.map(id => fetch(versioned(`packs/${id}.json`), { cache: 'no-store' }).then(x => x.json()).catch(() => null)));
+      return packs.filter(Boolean);
+    }
+
+    function render(packs) {
+      const pets = packs.filter(p => p.kind === 'pet').sort((a,b)=>a.id.localeCompare(b.id));
+      const fws  = packs.filter(p => p.kind !== 'pet').sort((a,b)=>a.id.localeCompare(b.id));
+      const requestedPack = new URLSearchParams(location.search).get('pack');
+      const selectedPet = Math.max(0, pets.findIndex(p => p.id === requestedPack));
+
+      // pets → picker
+      packsEl.innerHTML = '';
+      pets.forEach((p, i) => {
+        const l = document.createElement('label');
+        l.className = 'pack' + (i === selectedPet ? ' sel' : '');
+        l.innerHTML =
+          `<input type="radio" name="pack" value="${p.id}" ${i===selectedPet?'checked':''} style="position:absolute;opacity:0">` +
+          `<span class="num">${String(i+1).padStart(2,'0')}</span>` +
+          (p.preview ? `<img class="thumb" src="${p.preview}" alt="">` : `<span class="thumb"></span>`) +
+          `<span class="nm">${p.name}<small>${packInfo(p)}</small></span>`;
+        l.addEventListener('click', () => {
+          document.querySelectorAll('.pack').forEach(x => x.classList.remove('sel'));
+          l.classList.add('sel'); petButton(p); petPreview(p);
+        });
+        packsEl.appendChild(l);
+      });
+      if (pets[selectedPet]) { petButton(pets[selectedPet]); petPreview(pets[selectedPet]); } else packsEl.innerHTML = '<p class="muted">no pet packs</p>';
+
+      // firmwares → list
+      fwEl.innerHTML = '';
+      fws.forEach(p => {
+        const d = document.createElement('div');
+        d.className = 'fw';
+        const sub = p.submission ? ` (<a href="${p.submission}">submission</a>)` : '';
+        const previewBtn = p.preview ? '<button class="previewBtn" type="button">preview</button>' : '';
+        d.innerHTML =
+          `<div class="h"><b>${p.name}</b> <span class="tag">${p.tag||'ESP32'}</span></div>` +
+          `<p>${packInfo(p)}${sub}</p>` +
+          `<div class="fwtools">${previewBtn}` +
+          (p.manifest ? `<esp-web-install-button manifest="${versioned(p.manifest)}"></esp-web-install-button>` : '<p class="muted">manifest pending</p>') +
+          '</div>';
+        const btn = d.querySelector('.previewBtn');
+        if (btn) btn.addEventListener('click', () => petPreview(p));
+        fwEl.appendChild(d);
+      });
+      if (!fws.length) fwEl.innerHTML = '<p class="muted">no firmwares</p>';
+    }
+
+    try {
+      render(await loadPackList());
+    } catch (e) {
+      packsEl.innerHTML = `<p class="unsupported" style="display:block">Couldn't load the pack list (${e.message}). Refresh, or browse <a href="https://github.com/${OWNER}/${REPO}/tree/main/docs/packs">docs/packs/</a>.</p>`;
+      fwEl.innerHTML = '';
+    }
+    if (!('serial' in navigator) && !('usb' in navigator)) document.getElementById('unsupported').style.display = 'block';
+  </script>
+</body>
+</html>

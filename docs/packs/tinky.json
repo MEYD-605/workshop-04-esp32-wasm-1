@@ -1,0 +1,21 @@
+{
+  "id": "tinky",
+  "name": "Tinky ✨",
+  "kind": "pet",
+  "tag": "ESP32-S3",
+  "manifest": "manifest-tinky.json",
+  "preview": "preview/gifs/tinky/idle.gif",
+  "blurb": "ดาวประกาย — twinkling star-child desk-pet",
+  "submission": "https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/03-tinky",
+  "previewDir": "tinky/",
+  "states": [
+    "idle",
+    "busy",
+    "attention",
+    "celebrate",
+    "dizzy",
+    "sleep",
+    "heart"
+  ],
+  "updated": "2026-06-21"
+}
