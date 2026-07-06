@@ -1,0 +1,3 @@
+.venv/
+# build-storage.py output — regenerable; canonical copy อยู่ flash-kit/ + docs/
+/somtor-storage.bin
