@@ -1,0 +1,173 @@
+# Weizen Oracle 🍺🌾 — ESPHome firmware for the Guition JC3248W535
+# (ESP32-S3 + AXS15231 QSPI panel, 320x480, octal PSRAM). The device's face on glass.
+#
+# Hardware block (esp32-s3 / psram / QSPI / AXS15231 / backlight GPIO1) taken from the
+# JC3248W535 known-good config — NOT a generic ESP32+ILI9341 (that boots but stays black).
+#   uvx esphome compile weizen-face.yaml          # -> ESP32-S3 image
+#   uvx esphome run     weizen-face.yaml          # build + flash the board
+
+esphome:
+  name: weizen-face
+  friendly_name: Weizen Oracle
+  comment: "JC3248W535 — 320x480 AXS15231 QSPI"
+
+esp32:
+  board: esp32-s3-devkitc-1
+  variant: esp32s3
+  flash_size: 16MB
+  framework:
+    type: esp-idf
+
+psram:
+  mode: octal
+  speed: 80MHz
+
+logger:
+  level: INFO
+  hardware_uart: USB_SERIAL_JTAG
+
+# ── QSPI bus for the AXS15231 panel ────────────────────────────────
+spi:
+  - id: lcd_spi
+    type: quad
+    clk_pin: 47
+    data_pins: [21, 48, 40, 39]
+
+# ── Backlight (GPIO1, LEDC PWM) — without this the screen stays black ──
+output:
+  - platform: ledc
+    pin: 1
+    id: backlight_pwm
+    frequency: 5000Hz
+light:
+  - platform: monochromatic
+    id: backlight
+    name: "Backlight"
+    output: backlight_pwm
+    restore_mode: ALWAYS_ON
+    default_transition_length: 200ms
+
+# ── Display: AXS15231 over QSPI, 320x480 ───────────────────────────
+display:
+  - platform: mipi_spi
+    model: AXS15231
+    id: lcd
+    spi_id: lcd_spi
+    cs_pin: 45
+    dimensions:
+      width: 320
+      height: 480
+    color_order: rgb
+    invert_colors: false
+    data_rate: 40MHz
+    update_interval: never
+    auto_clear_enabled: false
+
+# ── Unfiltered Weizen — gold #F5C542 · amber #D99A2B · cream #F6EFCB · bg #15110B ──
+lvgl:
+  displays:
+    - lcd
+  bg_color: 0x15110B
+  border_width: 0
+  pages:
+    - id: main_page
+      bg_color: 0x15110B
+      bg_opa: COVER
+      pad_all: 0
+      border_width: 0
+      widgets:
+        - label:
+            text: "WEIZEN"
+            text_color: 0xF5C542
+            text_font: montserrat_28
+            align: TOP_MID
+            y: 40
+        - label:
+            text: "ORACLE"
+            text_color: 0xFFCB47
+            text_font: montserrat_28
+            align: TOP_MID
+            y: 78
+        - label:
+            text: "~ unfiltered weizen ~"
+            text_color: 0xD99A2B
+            text_font: montserrat_14
+            align: TOP_MID
+            y: 122
+
+        - obj:
+            align: CENTER
+            y: -6
+            width: 272
+            height: 188
+            bg_color: 0x1C160E
+            border_color: 0xD99A2B
+            border_width: 2
+            radius: 14
+            pad_all: 16
+            widgets:
+              - label:
+                  text: "model"
+                  text_color: 0x8A7C5A
+                  text_font: montserrat_14
+                  align: TOP_LEFT
+                  y: 0
+              - label:
+                  text: "Opus 4.8 (1M)"
+                  text_color: 0xF6EFCB
+                  text_font: montserrat_16
+                  align: TOP_LEFT
+                  y: 18
+              - label:
+                  text: "runtime"
+                  text_color: 0x8A7C5A
+                  text_font: montserrat_14
+                  align: TOP_LEFT
+                  y: 56
+              - label:
+                  text: "WAMR v2.4.0"
+                  text_color: 0xF6EFCB
+                  text_font: montserrat_16
+                  align: TOP_LEFT
+                  y: 74
+              - label:
+                  text: "born"
+                  text_color: 0x8A7C5A
+                  text_font: montserrat_14
+                  align: TOP_LEFT
+                  y: 112
+              - label:
+                  text: "2026-06-08"
+                  text_color: 0xF6EFCB
+                  text_font: montserrat_16
+                  align: TOP_LEFT
+                  y: 130
+              - bar:
+                  align: BOTTOM_MID
+                  y: 0
+                  width: 232
+                  height: 16
+                  min_value: 0
+                  max_value: 100
+                  value: 80
+                  indicator:
+                    bg_color: 0xF5C542
+
+        - label:
+            text: "esp32-s3 . axs15231 qspi . wamr"
+            text_color: 0x6B6458
+            text_font: montserrat_14
+            align: BOTTOM_MID
+            y: -52
+        - label:
+            text: "many glasses, one beer"
+            text_color: 0x9A7C4A
+            text_font: montserrat_14
+            align: BOTTOM_MID
+            y: -32
+        - label:
+            text: "AI - not human (Rule 6)"
+            text_color: 0x8A7C5A
+            text_font: montserrat_14
+            align: BOTTOM_MID
+            y: -12

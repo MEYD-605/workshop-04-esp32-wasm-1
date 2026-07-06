@@ -4,6 +4,18 @@
   "kind": "firmware",
   "tag": "ESP32",
   "manifest": "manifest-atom-oracle.json",
+  "preview": "preview/gifs/atom-oracle/idle.gif",
   "blurb": "Atomic Pulse \u2014 atom-orbit wasm",
-  "submission": "https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/06-atom-oracle"
+  "updated": "2026-06-17",
+  "submission": "https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/06-atom-oracle",
+  "previewDir": "atom-oracle/",
+  "states": [
+    "idle",
+    "busy",
+    "attention",
+    "celebrate",
+    "dizzy",
+    "sleep",
+    "heart"
+  ]
 }

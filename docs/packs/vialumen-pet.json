@@ -1,4 +1,20 @@
-{ "id":"vialumen-pet","name":"ViaLumen 🌟","kind":"pet","tag":"ESP32-S3",
-  "manifest":"manifest-vialumen-pet.json","preview":"preview/gifs/vialumen-pet/idle.gif",
-  "blurb":"Stellae Veritatis desk-pet — 7 states",
-  "submission":"https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/05-vialumen" }
+{
+  "id": "vialumen-pet",
+  "name": "ViaLumen 🌟",
+  "kind": "pet",
+  "tag": "ESP32-S3",
+  "manifest": "manifest-vialumen-pet.json",
+  "preview": "preview/gifs/vialumen-pet/idle.gif",
+  "blurb": "Stellae Veritatis desk-pet — 7 states",
+  "submission": "https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/05-vialumen",
+  "previewDir": "vialumen-pet/",
+  "states": [
+    "idle",
+    "busy",
+    "attention",
+    "celebrate",
+    "dizzy",
+    "sleep",
+    "heart"
+  ]
+}

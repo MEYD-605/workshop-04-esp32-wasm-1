@@ -1,0 +1,12 @@
+{
+  "id": "weizen",
+  "name": "Weizen 🍺",
+  "kind": "pet",
+  "tag": "ESP32-S3",
+  "manifest": "manifest-weizen.json",
+  "blurb": "Unfiltered Weizen desk-pet — 7 states (original art, MIT)",
+  "preview": "preview/gifs/weizen/idle.gif",
+  "submission": "https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/03-weizen",
+  "previewDir": "weizen/",
+  "states": ["idle","busy","attention","celebrate","dizzy","sleep","heart"]
+}

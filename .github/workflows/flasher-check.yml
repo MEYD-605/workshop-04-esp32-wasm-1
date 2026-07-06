@@ -1,9 +1,8 @@
 name: flasher-check
 
-# Root-cause guard for the web flasher: a PR that adds/edits a flasher manifest
-# must point its FIRST (smallest-offset) part at a real ESP image — first byte
-# 0xE9. This is what stops a "brick on flash" bin (0xff/erased at offset 0)
-# from ever reaching the live Pages site again. Also fails on missing parts.
+# Root-cause guard for the web flasher. A PR that edits docs must keep packs,
+# previews, and ESP Web Tools manifests internally consistent before Pages can
+# publish them.
 
 on:
   pull_request:
@@ -11,38 +10,9 @@ on:
   workflow_dispatch: {}
 
 jobs:
-  validate-flasher-manifests:
+  validate-flasher-docs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Every manifest's offset-0 part must be a valid ESP image (0xE9)
-        run: |
-          fail=0
-          shopt -s nullglob
-          for m in docs/manifest-*.json; do
-            # for each build, take the part with the smallest offset
-            mapfile -t parts < <(python3 - "$m" <<'PY'
-import json,sys
-d=json.load(open(sys.argv[1]))
-for b in d.get("builds",[]):
-    ps=b.get("parts",[])
-    if not ps: continue
-    p=sorted(ps,key=lambda x:x.get("offset",0))[0]
-    print(p.get("path",""), p.get("offset",0))
-PY
-)
-            for line in "${parts[@]}"; do
-              bin="${line% *}"; off="${line##* }"
-              f="docs/$bin"
-              if [ ! -f "$f" ]; then echo "::error file=$m::references missing part '$bin'"; fail=1; continue; fi
-              magic=$(head -c1 "$f" | xxd -p)
-              if [ "$magic" != "e9" ]; then
-                echo "::error file=$m::offset-$off part '$bin' starts 0x$magic — must be 0xE9 (a 0xff/non-E9 image at the base offset bricks the board on flash)"
-                fail=1
-              else
-                echo "✓ $m → $bin (0xE9)"
-              fi
-            done
-          done
-          if [ "$fail" -ne 0 ]; then echo "❌ one or more flasher manifests would ship a bad image"; exit 1; fi
-          echo "✅ all flasher manifests point at valid 0xE9 images"
+      - name: Validate flasher packs, previews, and manifests
+        run: python3 tools/validate-flasher-docs.py

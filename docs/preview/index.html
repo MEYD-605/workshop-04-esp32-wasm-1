@@ -64,11 +64,16 @@ async function getPack(id){
   const r = await fetch(`../packs/${id}.json`, { cache: 'no-store' });
   if (!r.ok) throw new Error('pack '+id+' '+r.status);
   const p = await r.json();
-  const pk = { id, dir: p.previewDir || "", states: (p.states && p.states.length) ? p.states : ["idle"] };
+  const pk = {
+    id,
+    dir: p.previewDir || "",
+    states: (p.states && p.states.length) ? p.states : ["idle"],
+    updated: p.updated || ""
+  };
   packCache[id] = pk; return pk;
 }
 
-let M, W=0, H=0, frames=[], delays=[], idx=0, playing=true, timer=null, raf=null, curPack="bufo";
+let M, W=0, H=0, frames=[], delays=[], idx=0, playing=true, timer=null, raf=null, curPack="bufo", curUpdated="";
 const cv = document.getElementById("cv"), ctx = cv.getContext("2d");
 const stat = document.getElementById("stat");
 const packsRow = document.getElementById("packs"), gifsRow = document.getElementById("gifs");
@@ -92,7 +97,8 @@ function decode(bytes){
     if (r === 0) break;
   }
   M._free(dptr); M._gif_close(); M._free(ptr); idx = 0;
-  setStat(`<b>${curPack}</b> · ${W}×${H} · ${frames.length} frame${frames.length>1?"s":""} · decoded in wasm`);
+  const updated = curUpdated ? ` · updated ${curUpdated}` : "";
+  setStat(`<b>${curPack}</b> · ${W}×${H} · ${frames.length} frame${frames.length>1?"s":""} · decoded in wasm${updated}`);
   return frames.length > 0;
 }
 function tick(){
@@ -127,9 +133,10 @@ async function selectPack(id){
   [...packsRow.children].forEach(c=>c.classList.toggle("on", c.textContent===id));
   try {
     const pk = await getPack(id);
+    curUpdated = pk.updated || "";
     buildStates(pk);
     loadUrl("gifs/"+pk.dir+pk.states[0]+".gif");
-  } catch(e){ setStat(`unknown pack: ${id}`); }
+  } catch(e){ curUpdated = ""; setStat(`unknown pack: ${id}`); }
 }
 // standalone (non-embed) selector — discover packs via the GitHub contents API
 async function buildPackButtons(){

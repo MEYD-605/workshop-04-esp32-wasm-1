@@ -1,0 +1,21 @@
+{
+  "id": "atom-oracle-pet",
+  "name": "Atom Oracle ⚛️",
+  "kind": "pet",
+  "tag": "ESP32-S3",
+  "manifest": "manifest-atom-oracle-pet.json",
+  "preview": "preview/gifs/atom-oracle/idle.gif",
+  "blurb": "atomic orbit desk-pet — WASM-decoded GIFs",
+  "updated": "2026-06-17",
+  "submission": "https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/06-atom-oracle",
+  "previewDir": "atom-oracle/",
+  "states": [
+    "idle",
+    "busy",
+    "attention",
+    "celebrate",
+    "dizzy",
+    "sleep",
+    "heart"
+  ]
+}

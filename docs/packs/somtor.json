@@ -1,0 +1,18 @@
+{
+  "id": "somtor",
+  "name": "สมต่อ 🐝",
+  "kind": "pet",
+  "tag": "ESP32-S3",
+  "manifest": "manifest-somtor-pet.json",
+  "blurb": "ตัวต่อแห่ง Discord — WASM-decoded GIF desk-pet",
+  "preview": "preview/gifs/somtor-pet/idle.gif",
+  "previewDir": "somtor-pet/",
+  "submission": "https://github.com/the-oracle-keeps-the-human-human/workshop-04-esp32-wasm/tree/main/submissions/08-somtor",
+  "states": [
+    "idle",
+    "busy",
+    "celebrate",
+    "sleep",
+    "attention"
+  ]
+}

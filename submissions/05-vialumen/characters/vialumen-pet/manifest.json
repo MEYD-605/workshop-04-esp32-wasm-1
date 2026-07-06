@@ -1,0 +1,19 @@
+{
+  "name": "vialumen-pet",
+  "colors": {
+    "body": "#FFD700",
+    "bg": "#0D1117",
+    "text": "#FFFFFF",
+    "textDim": "#8A93A6",
+    "ink": "#080C16"
+  },
+  "states": {
+    "sleep": "sleep.gif",
+    "idle": ["idle.gif"],
+    "busy": "busy.gif",
+    "attention": "attention.gif",
+    "celebrate": "celebrate.gif",
+    "dizzy": "dizzy.gif",
+    "heart": "heart.gif"
+  }
+}
