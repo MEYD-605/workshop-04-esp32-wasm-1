@@ -1,0 +1,21 @@
+{
+  "name": "tinky",
+  "colors": {
+    "body": "#FFD83B",
+    "bg": "#0D1028",
+    "text": "#FFF7C8",
+    "textDim": "#9AABD0",
+    "ink": "#1E1840"
+  },
+  "states": {
+    "sleep": "sleep.gif",
+    "idle": [
+      "idle.gif"
+    ],
+    "busy": "busy.gif",
+    "attention": "attention.gif",
+    "celebrate": "celebrate.gif",
+    "dizzy": "dizzy.gif",
+    "heart": "heart.gif"
+  }
+}
